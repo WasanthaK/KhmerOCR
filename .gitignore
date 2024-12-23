@@ -1,2 +1,5 @@
 venv/
-1m_final_model/
+*.safetensors
+__pycache__/
+*.log
+*.txt
