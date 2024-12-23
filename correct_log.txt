@@ -1,0 +1,16 @@
+Correct Prediction:
+Image: name_10020.png
+Correct Prediction:
+Image: name_10020.png
+Correct Prediction:
+Image: name_100013.png
+Prediction: សម្បត្តតិ ម៉ីឡឹក
+--------------------------------------------------
+Correct Prediction:
+Image: name_100013.png
+Prediction: សម្បត្តតិ ម៉ីឡឹក
+--------------------------------------------------
+Correct Prediction:
+Image: name_10001.png
+Prediction: សុភ័ក្រ គីមល័ង
+--------------------------------------------------
