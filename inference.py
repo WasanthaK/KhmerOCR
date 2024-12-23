@@ -3,6 +3,7 @@ import requests
 from transformers import VisionEncoderDecoderModel, TrOCRProcessor
 import torch
 import streamlit as st
+from PIL import Image
 
 # Define the blob URLs
 model_files = {
@@ -46,14 +47,6 @@ try:
     model.eval()
 except Exception as e:
     st.error(f"Failed to load the model or processor: {str(e)}")
-
-# Streamlit app
-st.title("Enadoc Khmer OCR using modified TrOCR model")
-st.write(
-    "Upload a PNG file, or select a file from the `selected_images` folder for prediction. "
-    "Mark predictions as correct or incorrect to log results for further analysis."
-)
-
 
 # Streamlit app
 st.title("Enadoc Khmer OCR using modified TrOCR model")
