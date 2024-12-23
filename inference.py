@@ -4,16 +4,40 @@ from PIL import Image
 import torch
 from transformers import VisionEncoderDecoderModel, TrOCRProcessor
 import streamlit as st
+import requests
+
+# Paths for model files
+local_model_dir = "/home/site/wwwroot/1m_final_model"  # Adjust for your deployment
+local_model_path = os.path.join(local_model_dir, "model.safetensors")
+blob_url = "https://<storage-account-name>.blob.core.windows.net/<container-name>/model.safetensors"
+
+# Ensure the model directory exists
+if not os.path.exists(local_model_dir):
+    os.makedirs(local_model_dir)
+
+# Download the model file if not available locally
+if not os.path.exists(local_model_path):
+    st.info("Downloading the model from Azure Blob Storage. Please wait...")
+    try:
+        response = requests.get(blob_url)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        with open(local_model_path, "wb") as f:
+            f.write(response.content)
+        st.success("Model downloaded successfully.")
+    except Exception as e:
+        st.error(f"Failed to download the model: {str(e)}")
 
 # Load the model and processor
-model_path = "./1m_final_model"  # Update this path to your trained model
-model = VisionEncoderDecoderModel.from_pretrained(model_path)
-processor = TrOCRProcessor.from_pretrained(model_path)
+try:
+    model = VisionEncoderDecoderModel.from_pretrained(local_model_dir)
+    processor = TrOCRProcessor.from_pretrained(local_model_dir)
 
-# Check for GPU availability and move the model to the appropriate device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = model.to(device)
-model.eval()
+    # Check for GPU availability and move the model to the appropriate device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()
+except Exception as e:
+    st.error(f"Failed to load the model or processor: {str(e)}")
 
 # Streamlit app
 st.title("Enadoc Khmer OCR using modified TrOCR model")
