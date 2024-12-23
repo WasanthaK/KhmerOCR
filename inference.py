@@ -1,31 +1,39 @@
 import os
-import io
-from PIL import Image
-import torch
-from transformers import VisionEncoderDecoderModel, TrOCRProcessor
-import streamlit as st
 import requests
+from transformers import VisionEncoderDecoderModel, TrOCRProcessor
+import torch
+import streamlit as st
 
-# Paths for model files
-local_model_dir = "/home/site/wwwroot/1m_final_model"  # Adjust for your deployment
-local_model_path = os.path.join(local_model_dir, "model.safetensors")
-blob_url = "https://<storage-account-name>.blob.core.windows.net/<container-name>/model.safetensors"
+# Define the blob URLs
+model_files = {
+    "config.json": "https://kmherocr.blob.core.windows.net/model/config.json",
+    "generation_config.json": "https://kmherocr.blob.core.windows.net/model/generation_config.json",
+    "merges.txt": "https://kmherocr.blob.core.windows.net/model/merges.txt",
+    "model.safetensors": "https://kmherocr.blob.core.windows.net/model/model.safetensors",
+    "preprocessor_config.json": "https://kmherocr.blob.core.windows.net/model/preprocessor_config.json",
+    "special_tokens_map.json": "https://kmherocr.blob.core.windows.net/model/special_tokens_map.json",
+    "tokenizer_config.json": "https://kmherocr.blob.core.windows.net/model/tokenizer_config.json",
+    "tokenizer.json": "https://kmherocr.blob.core.windows.net/model/tokenizer.json",
+    "vocab.json": "https://kmherocr.blob.core.windows.net/model/vocab.json",
+}
 
-# Ensure the model directory exists
-if not os.path.exists(local_model_dir):
-    os.makedirs(local_model_dir)
+# Local model directory
+local_model_dir = "./1m_final_model"
+os.makedirs(local_model_dir, exist_ok=True)
 
-# Download the model file if not available locally
-if not os.path.exists(local_model_path):
-    st.info("Downloading the model from Azure Blob Storage. Please wait...")
-    try:
-        response = requests.get(blob_url)
-        response.raise_for_status()  # Raise HTTPError for bad responses
-        with open(local_model_path, "wb") as f:
-            f.write(response.content)
-        st.success("Model downloaded successfully.")
-    except Exception as e:
-        st.error(f"Failed to download the model: {str(e)}")
+# Download missing files
+for filename, url in model_files.items():
+    local_file_path = os.path.join(local_model_dir, filename)
+    if not os.path.exists(local_file_path):
+        st.info(f"Downloading {filename}...")
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            with open(local_file_path, "wb") as f:
+                f.write(response.content)
+            st.success(f"{filename} downloaded successfully.")
+        except Exception as e:
+            st.error(f"Failed to download {filename}: {str(e)}")
 
 # Load the model and processor
 try:
@@ -38,6 +46,14 @@ try:
     model.eval()
 except Exception as e:
     st.error(f"Failed to load the model or processor: {str(e)}")
+
+# Streamlit app
+st.title("Enadoc Khmer OCR using modified TrOCR model")
+st.write(
+    "Upload a PNG file, or select a file from the `selected_images` folder for prediction. "
+    "Mark predictions as correct or incorrect to log results for further analysis."
+)
+
 
 # Streamlit app
 st.title("Enadoc Khmer OCR using modified TrOCR model")
