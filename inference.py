@@ -5,6 +5,9 @@ import torch
 import streamlit as st
 from PIL import Image
 
+st.write("CORS Enabled:", st.config.get_option("server.enableCORS"))
+st.write("XSRF Protection Enabled:", st.config.get_option("server.enableXsrfProtection"))
+
 ## Load model and processor from Hugging Face
 model_name = "Wasanthak/trocr-khmer-printed"
 model = VisionEncoderDecoderModel.from_pretrained(model_name)
