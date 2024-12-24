@@ -14,3 +14,7 @@ Correct Prediction:
 Image: name_10001.png
 Prediction: សុភ័ក្រ គីមល័ង
 --------------------------------------------------
+Correct Prediction:
+Image: name_263236.png
+Prediction: ម៉ោញ ប៊ុនធឿន
+--------------------------------------------------
