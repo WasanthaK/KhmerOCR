@@ -5,48 +5,14 @@ import torch
 import streamlit as st
 from PIL import Image
 
-# Define the blob URLs
-model_files = {
-    "config.json": "https://kmherocr.blob.core.windows.net/model/config.json",
-    "generation_config.json": "https://kmherocr.blob.core.windows.net/model/generation_config.json",
-    "merges.txt": "https://kmherocr.blob.core.windows.net/model/merges.txt",
-    "model.safetensors": "https://kmherocr.blob.core.windows.net/model/model.safetensors",
-    "preprocessor_config.json": "https://kmherocr.blob.core.windows.net/model/preprocessor_config.json",
-    "special_tokens_map.json": "https://kmherocr.blob.core.windows.net/model/special_tokens_map.json",
-    "tokenizer_config.json": "https://kmherocr.blob.core.windows.net/model/tokenizer_config.json",
-    "tokenizer.json": "https://kmherocr.blob.core.windows.net/model/tokenizer.json",
-    "vocab.json": "https://kmherocr.blob.core.windows.net/model/vocab.json",
-}
+## Load model and processor from Hugging Face
+model_name = "Wasanthak/trocr-khmer-printed"
+model = VisionEncoderDecoderModel.from_pretrained(model_name)
+processor = TrOCRProcessor.from_pretrained(model_name)
 
-# Local model directory
-local_model_dir = "./1m_final_model"
-os.makedirs(local_model_dir, exist_ok=True)
-
-# Download missing files
-for filename, url in model_files.items():
-    local_file_path = os.path.join(local_model_dir, filename)
-    if not os.path.exists(local_file_path):
-        st.info(f"Downloading {filename}...")
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            with open(local_file_path, "wb") as f:
-                f.write(response.content)
-            st.success(f"{filename} downloaded successfully.")
-        except Exception as e:
-            st.error(f"Failed to download {filename}: {str(e)}")
-
-# Load the model and processor
-try:
-    model = VisionEncoderDecoderModel.from_pretrained(local_model_dir)
-    processor = TrOCRProcessor.from_pretrained(local_model_dir)
-
-    # Check for GPU availability and move the model to the appropriate device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
-    model.eval()
-except Exception as e:
-    st.error(f"Failed to load the model or processor: {str(e)}")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+model.eval()
 
 # Streamlit app
 st.title("Enadoc Khmer OCR using modified TrOCR model!")
