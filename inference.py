@@ -5,16 +5,23 @@ import torch
 import streamlit as st
 from PIL import Image
 
-st.write("CORS Enabled:", st.config.get_option("server.enableCORS"))
-st.write("XSRF Protection Enabled:", st.config.get_option("server.enableXsrfProtection"))
+# Cache the model and processor to load them only once
+@st.cache_resource
+def load_model_and_processor(model_name):
+    model = VisionEncoderDecoderModel.from_pretrained(model_name)
+    processor = TrOCRProcessor.from_pretrained(model_name)
+    return model, processor
 
-## Load model and processor from Hugging Face
 model_name = "Wasanthak/trocr-khmer-printed"
-model = VisionEncoderDecoderModel.from_pretrained(model_name)
-processor = TrOCRProcessor.from_pretrained(model_name)
+model, processor = load_model_and_processor(model_name)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
+
+# Optionally, use half-precision floats for faster computation if supported
+if device.type == "cuda":
+    model = model.half()
+
 model.eval()
 
 # Streamlit app

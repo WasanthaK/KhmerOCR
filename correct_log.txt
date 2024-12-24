@@ -18,3 +18,7 @@ Correct Prediction:
 Image: name_263236.png
 Prediction: ម៉ោញ ប៊ុនធឿន
 --------------------------------------------------
+Correct Prediction:
+Image: name_100016.png
+Prediction: អឿន សុផាន់ណា
+--------------------------------------------------
